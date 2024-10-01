@@ -33,7 +33,6 @@ namespace core.Controllers
         }
 
         [HttpDelete("name")]
-        []
         public async Task<IActionResult> DeleteProductAsync(string name)
         {
             try
