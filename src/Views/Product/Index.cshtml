@@ -1,0 +1,302 @@
+﻿@model IEnumerable<core.Models.Product>
+
+@section Styles
+{
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+}
+
+<form asp-action="Index" method="get" class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <label for="productName" class="mr-2">Find by name:</label>
+        <input type="text" class="form-control" name="productName" id="productName" placeholder="Product Name" value="@ViewData["CurrentFilter"]" />
+    </div>
+    <button type="submit" class="btn btn-primary mr-2">Search</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to Full List</a>
+</form>
+
+<!-- Модальное окно создания нового продукта -->
+<p>
+    <a class="btn btn-success" data-toggle="modal" data-target="#productModal">Create New</a>
+</p>
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Create New Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createProductForm">
+                    <div class="form-group">
+                        <label for="productNameInput">Product Name</label>
+                        <input type="text" class="form-control" id="productNameInput" placeholder="Enter product name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescriptionInput">Product Description</label>
+                        <textarea class="form-control" id="productDescriptionInput" placeholder="Enter product description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="productVersionNameInput">Product Version Name</label>
+                        <input type="text" class="form-control" id="productVersionNameInput" placeholder="Enter version name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productVersionDescriptionInput">Product Version Description</label>
+                        <textarea class="form-control" id="productVersionDescriptionInput" placeholder="Enter version description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="productVersionDateInput">Creating Date</label>
+                        <input type="date" class="form-control" id="productVersionDateInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productWidthInput">Width</label>
+                        <input type="number" class="form-control" id="productWidthInput" step="0.01" min="0.01" placeholder="Enter product width" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productHeightInput">Height</label>
+                        <input type="number" class="form-control" id="productHeightInput" step="0.01" min="0.01" placeholder="Enter product height" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productLengthInput">Length</label>
+                        <input type="number" class="form-control" id="productLengthInput" step="0.01" min="0.01" placeholder="Enter product length" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+                <div id="modalError" class="text-danger mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования продукта -->
+<div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalTitle">Edit Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" id="editProductId" />
+                    <div class="form-group">
+                        <label for="editProductNameInput">Product Name</label>
+                        <input type="text" class="form-control" id="editProductNameInput" placeholder="Enter product name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductDescriptionInput">Product Description</label>
+                        <textarea class="form-control" id="editProductDescriptionInput" placeholder="Enter product description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductVersionNameInput">Product Version Name</label>
+                        <input type="text" class="form-control" id="editProductVersionNameInput" placeholder="Enter version name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductVersionDescriptionInput">Product Version Description</label>
+                        <textarea class="form-control" id="editProductVersionDescriptionInput" placeholder="Enter version description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductVersionDateInput">Creating Date</label>
+                        <input type="date" class="form-control" id="editProductVersionDateInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductWidthInput">Width</label>
+                        <input type="number" class="form-control" id="editProductWidthInput" step="0.01" min="0.01" placeholder="Enter product width" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductHeightInput">Height</label>
+                        <input type="number" class="form-control" id="editProductHeightInput" step="0.01" min="0.01" placeholder="Enter product height" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductLengthInput">Length</label>
+                        <input type="number" class="form-control" id="editProductLengthInput" step="0.01" min="0.01" placeholder="Enter product length" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+                <div id="editModalError" class="text-danger mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Product Name</th>
+            <th scope="col">Product Description</th>
+            <th scope="col">Versions</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Version Name</th>
+                                    <th>Version Description</th>
+                                    <th>Creating Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (product.Versions != null && product.Versions.Any())
+                                {
+                                    @foreach (var version in product.Versions)
+                                    {
+                                        <tr>
+                                            <td>@version.Name</td>
+                                            <td>@version.Description</td>
+                                            <td>@version.CreatingDate.ToString("dd:MM:yyyy")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center">No versions available</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Actions">
+                            <button class="btn btn-warning btn-sm editBtn"
+                                    data-toggle="modal"
+                                    data-target="#editProductModal"
+                                    data-id="@product.Id"
+                                    data-name="@product.Name"
+                                    data-description="@product.Description"
+                                    data-version-name="@product.Versions.FirstOrDefault()?.Name"
+                                    data-version-description="@product.Versions.FirstOrDefault()?.Description"
+                                    data-creating-date="@product.Versions.FirstOrDefault()?.CreatingDate.ToString("yyyy-MM-dd")"
+                                    data-width="@product.Versions.FirstOrDefault()?.Width"
+                                    data-height="@product.Versions.FirstOrDefault()?.Height"
+                                    data-length="@product.Versions.FirstOrDefault()?.Length">
+                                Edit
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No products found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#createProductForm').on('submit', function (e) {
+                e.preventDefault();
+                const productName = $('#productNameInput').val();
+                const productDescription = $('#productDescriptionInput').val();
+                const productVersionName = $('#productVersionNameInput').val();
+                const productVersionDescription = $('#productVersionDescriptionInput').val();
+                const productVersionDate = $('#productVersionDateInput').val();
+                const productWidth = $('#productWidthInput').val();
+                const productHeight = $('#productHeightInput').val();
+                const productLength = $('#productLengthInput').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Create", "Product")',
+                    data: {
+                        Name: productName,
+                        Description: productDescription,
+                        Versions: [{
+                            Name: productVersionName,
+                            Description: productVersionDescription,
+                            CreatingDate: productVersionDate,
+                            Width: productWidth,
+                            Height: productHeight,
+                            Length: productLength
+                        }]
+                    },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        $('#modalError').text(xhr.responseText);
+                    }
+                });
+            });
+
+            $('.editBtn').on('click', function () {
+                const productId = $(this).data('id');
+                const productName = $(this).data('name');
+                const productDescription = $(this).data('description');
+                const versionName = $(this).data('version-name');
+                const versionDescription = $(this).data('version-description');
+                const creatingDate = $(this).data('creating-date');
+                const width = $(this).data('width');
+                const height = $(this).data('height');
+                const length = $(this).data('length');
+
+                $('#editProductId').val(productId);
+                $('#editProductNameInput').val(productName);
+                $('#editProductDescriptionInput').val(productDescription);
+                $('#editProductVersionNameInput').val(versionName);
+                $('#editProductVersionDescriptionInput').val(versionDescription);
+                $('#editProductVersionDateInput').val(creatingDate);
+                $('#editProductWidthInput').val(width);
+                $('#editProductHeightInput').val(height);
+                $('#editProductLengthInput').val(length);
+            });
+
+            $('#editProductForm').on('submit', function (e) {
+                e.preventDefault();
+                const productId = $('#editProductId').val();
+                const productName = $('#editProductNameInput').val();
+                const productDescription = $('#editProductDescriptionInput').val();
+                const versionName = $('#editProductVersionNameInput').val();
+                const versionDescription = $('#editProductVersionDescriptionInput').val();
+                const creatingDate = $('#editProductVersionDateInput').val();
+                const width = $('#editProductWidthInput').val();
+                const height = $('#editProductHeightInput').val();
+                const length = $('#editProductLengthInput').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Edit", "Product")',
+                    data: {
+                        Id: productId,
+                        Name: productName,
+                        Description: productDescription,
+                        Versions: [{
+                            Name: versionName,
+                            Description: versionDescription,
+                            CreatingDate: creatingDate,
+                            Width: width,
+                            Height: height,
+                            Length: length
+                        }]
+                    },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        $('#editModalError').text(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
