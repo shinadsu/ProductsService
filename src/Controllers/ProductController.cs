@@ -43,7 +43,7 @@ namespace src.Controllers
             }
             catch (Exception ex)
             {
-                // Обработайте исключение должным образом
+               
                 return View("Error"); // Возвращаем представление об ошибке
             }
         }
